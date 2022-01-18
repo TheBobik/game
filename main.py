@@ -129,12 +129,12 @@ tile_images = {
     'empty': load_image('moon.png'),
     'end': load_image('rocket.png')
 }
-player_image = load_image('mar.png')
+player_image = load_image('astronaut.png')
 
 tile_width = tile_height = 50
 
 pygame.init()
-size = width, height = 500, 500
+size = width, height = 1000, 600
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 start_screen()
