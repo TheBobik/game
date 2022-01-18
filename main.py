@@ -134,7 +134,7 @@ tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 tile_images = {
     'wall': load_image('box.png'),
-    'empty': load_image('moon.png')
+    'empty': load_image('moon.png'),
     'end': load_image('rocket.png')
 }
 player_image = load_image('mar.png')
