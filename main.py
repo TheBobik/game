@@ -9,6 +9,43 @@ def terminate():
     sys.exit()
 
 
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, tile_type, pos_x, pos_y):
+        super().__init__(tiles_group, all_sprites)
+        self.image = tile_images[tile_type]
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y)
+
+
+class Player(pygame.sprite.Sprite):
+
+    def __init__(self, pos_x, pos_y):
+        super().__init__(player_group, all_sprites)
+        self.pos = [pos_x, pos_y]
+        self.image = player_image
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x + 15, tile_height * pos_y + 5)
+
+    def move(self, x, y):
+        self.rect = self.image.get_rect().move(
+            tile_width * x + 15, tile_height * y + 5)
+        self.pos = [x, y]
+
+
+class Camera:
+    def __init__(self):
+        self.dx = 0
+        self.dy = 0
+
+    def apply(self, obj):
+        obj.rect.x += self.dx
+        obj.rect.y += self.dy
+
+    def update(self, target):
+        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
+        self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
+
+
 def start_screen():
     intro_text = [""]
 
@@ -61,59 +98,29 @@ def generate_level(level):
         for x in range(len(level[y])):
             if level[y][x] == '.':
                 Tile('empty', x, y)
-            elif level[y][x] == '#':
-                Tile('wall', x, y)
             elif level[y][x] == '@':
                 Tile('empty', x, y)
                 new_player = Player(x, y)
-            elif level[y][x] == '!':
-                Tile('end', x, y)
+            elif level[y][x] == '#':
+                Tile('cave', x, y)
     return new_player, x, y
 
 
 def move(hero, movement):
     global level_x, level_y
     x, y = hero.pos
-    print(level_map[x][y - 1])
-    print(level_map[x][y + 1])
-    print(level_map[x - 1][y])
-    print(level_map[x][y + 1])
-    print()
     if movement == "up":
-        if y > 0 and (level_map[y - 1][x] == "." or level_map[y - 1][x] == "@")or level_map[y - 1][x] == "!":
+        if y > 0 and (level_map[y - 1][x] == "." or level_map[y - 1][x] == "@") or level_map[y - 1][x] == "!":
             hero.move(x, y - 1)
     elif movement == "down":
         if y < level_y - 1 and (level_map[y + 1][x] == "." or level_map[y + 1][x] == "@" or level_map[y + 1][x] == "!"):
             hero.move(x, y + 1)
     elif movement == "left":
-        if x > 0 and (level_map[y][x - 1] == "." or level_map[y][x - 1] == "@"or level_map[y][x - 1] == "!"):
+        if x > 0 and (level_map[y][x - 1] == "." or level_map[y][x - 1] == "@" or level_map[y][x - 1] == "!"):
             hero.move(x - 1, y)
     elif movement == "right":
-        if x < level_x - 1 and (level_map[y][x + 1] == "." or level_map[y][x + 1] == "@"or level_map[y][x + 1] == "!"):
+        if x < level_x - 1 and (level_map[y][x + 1] == "." or level_map[y][x + 1] == "@" or level_map[y][x + 1] == "!"):
             hero.move(x + 1, y)
-
-
-class Tile(pygame.sprite.Sprite):
-    def __init__(self, tile_type, pos_x, pos_y):
-        super().__init__(tiles_group, all_sprites)
-        self.image = tile_images[tile_type]
-        self.rect = self.image.get_rect().move(
-            tile_width * pos_x, tile_height * pos_y)
-
-
-class Player(pygame.sprite.Sprite):
-
-    def __init__(self, pos_x, pos_y):
-        super().__init__(player_group, all_sprites)
-        self.pos = [pos_x, pos_y]
-        self.image = player_image
-        self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 15, tile_height * pos_y + 5)
-
-    def move(self, x, y):
-        self.rect = self.image.get_rect().move(
-            tile_width * x + 15, tile_height * y + 5)
-        self.pos = [x, y]
 
 
 player = None
@@ -122,13 +129,16 @@ all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 tile_images = {
-    'wall': load_image('box.png'),
     'empty': load_image('moon.png'),
-    'end': load_image('rocket.png')
+    'rocket': load_image('rocket.png'),
+    'cave': load_image('cave.png'),
 }
+
 player_image = load_image('astronaut.png')
 
 tile_width = tile_height = 50
+
+camera = Camera()
 
 pygame.init()
 size = width, height = 1000, 600
@@ -136,23 +146,23 @@ screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 start_screen()
 level_map = load_level('map.txt')
-player, level_x, level_y = generate_level(level_map)
+hero, level_x, level_y = generate_level(level_map)
+camera.update(hero)
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
-
         key = pygame.key.get_pressed()
         if event.type == pygame.QUIT:
             running = False
         if key[pygame.K_DOWN]:
-            move(player, 'down')
+            move(hero, 'down')
         if key[pygame.K_UP]:
-            move(player, 'up')
+            move(hero, 'up')
         if key[pygame.K_LEFT]:
-            move(player, 'left')
+            move(hero, 'left')
         if key[pygame.K_RIGHT]:
-            move(player, 'right')
+            move(hero, 'right')
 
     all_sprites.draw(screen)
     tiles_group.draw(screen)
