@@ -1,7 +1,7 @@
 import os
+import pygame, sys, clock
 
 FPS = 50
-import pygame, sys, clock
 
 
 def terminate():
@@ -10,12 +10,9 @@ def terminate():
 
 
 def start_screen():
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
+    intro_text = [""]
 
-    fon = pygame.transform.scale(load_image('fon.jpg'), (800, 600))
+    fon = pygame.transform.scale(load_image('fon.jpg'), (1000, 800))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
@@ -68,9 +65,9 @@ def generate_level(level):
                 Tile('wall', x, y)
             elif level[y][x] == '@':
                 Tile('empty', x, y)
+                new_player = Player(x, y)
             elif level[y][x] == '!':
                 Tile('end', x, y)
-                new_player = Player(x, y)
     return new_player, x, y
 
 
