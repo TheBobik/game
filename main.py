@@ -12,7 +12,7 @@ def terminate():
 def start_screen():
     intro_text = [""]
 
-    fon = pygame.transform.scale(load_image('fon.jpg'), (1000, 800))
+    fon = pygame.transform.scale(load_image('zastavka'), (1000, 800))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
