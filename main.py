@@ -103,6 +103,8 @@ def generate_level(level):
                 new_player = Player(x, y)
             elif level[y][x] == '#':
                 Tile('cave', x, y)
+            elif level[y][x] == '!':
+                Tile('rocket', x, y)
     return new_player, x, y
 
 
