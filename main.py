@@ -12,7 +12,7 @@ def load_image(name, color_key=None):
         raise SystemExit(message)
     image = image.convert_alpha()
     if color_key is not None:
-        if color_key is -1:
+        if color_key == -1:
             color_key = image.get_at((0, 0))
         image.set_colorkey(color_key)
     return image
@@ -26,6 +26,7 @@ FPS = 50
 tile_images = {
     'rocket': load_image('rocket.png'),
     'cave': load_image('cave.png'),
+    'oxygen': load_image('O2.png'),
     'empty1': load_image('moon.png'),
     'empty2': load_image('moon.png')
 }
@@ -61,8 +62,8 @@ class Player(pygame.sprite.Sprite):
 
 class Camera:
     def __init__(self):
-        self.dx = 5
-        self.dy = 5
+        self.dx = 0
+        self.dy = 0
 
     def apply(self, obj):
         obj.rect.x = obj.abs_pos[0] + self.dx
@@ -120,6 +121,8 @@ def generate_level(level):
                 Tile('empty2', x, y)
             elif level[y][x] == '!':
                 Tile('rocket', x, y)
+            elif level[y][x] == '0':
+                Tile('oxygen', x, y)
             elif level[y][x] == '#':
                 Tile('cave', x, y)
             elif level[y][x] == '@':
@@ -131,20 +134,28 @@ def generate_level(level):
 def move(hero, movement):
     x, y = hero.pos
     if movement == "up":
-        if y > 0 and level_map[y - 1][x] == "." or level_map[y][x + 1] == "@":
-            print(y, level_map[y][x])
+        if y > 0 and level_map[y - 1][x] == "." or level_map[y - 1][x] == "@" or level_map[y - 1][x] == "0":
+            if level_map[y - 1][x] == "0":
+                '''Убирание кислорода!!!!'''
+                Tile('empty1', x, y - 1)
             hero.move(x, y - 1)
     elif movement == "down":
-        if y < max_y and level_map[y + 1][x] == "." or level_map[y][x + 1] == "@":
-            print(y, level_map[y][x])
+        if y < max_y and level_map[y + 1][x] == "." or level_map[y + 1][x] == "@" or level_map[y + 1][x] == "0":
+            if level_map[y + 1][x] == "0":
+                '''Убирание кислорода!!!!'''
+                Tile('empty1', x, y + 1)
             hero.move(x, y + 1)
     elif movement == "left":
-        if x > 0 and level_map[y][x - 1] == "." or level_map[y][x + 1] == "@":
-            print(x, level_map[y][x])
+        if x > 0 and level_map[y][x - 1] == "." or level_map[y][x - 1] == "@" or level_map[y][x - 1] == "0":
+            if level_map[y][x - 1] == "0":
+                '''Убирание кислорода!!!!'''
+                Tile('empty1', x - 1, y)
             hero.move(x - 1, y)
     elif movement == "right":
-        if x < max_x and level_map[y][x + 1] == "." or level_map[y][x + 1] == "@":
-            print(x, level_map[y][x])
+        if x < max_x and level_map[y][x + 1] == "." or level_map[y][x + 1] == "@" or level_map[y][x + 1] == "0":
+            if level_map[y][x + 1] == "0":
+                '''Убирание кислорода!!!!'''
+                Tile('empty1', x + 1, y)
             hero.move(x + 1, y)
 
 
