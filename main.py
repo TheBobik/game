@@ -73,7 +73,7 @@ class Camera:
         self.dx = 0
         self.dy = 0
 
-
+oxy = 100
 player = None
 running = True
 clock = pygame.time.Clock()
@@ -131,32 +131,51 @@ def generate_level(level):
     return new_player, x, y
 
 
+def oxygen(status):
+    global oxy
+    if oxy > 0:
+        if status == 'minus':
+            oxy -= 10
+        elif status == 'full':
+            oxy = 100
+    print(oxy)
+
+
 def move(hero, movement):
     x, y = hero.pos
+    global oxy
     if movement == "up":
         if y > 0 and level_map[y - 1][x] == "." or level_map[y - 1][x] == "@" or level_map[y - 1][x] == "0":
+            if oxy > 0:
+                hero.move(x, y - 1)
+            oxygen('minus')
             if level_map[y - 1][x] == "0":
-                '''Убирание кислорода!!!!'''
                 Tile('empty1', x, y - 1)
-            hero.move(x, y - 1)
+                oxygen('full')
     elif movement == "down":
         if y < max_y and level_map[y + 1][x] == "." or level_map[y + 1][x] == "@" or level_map[y + 1][x] == "0":
+            if oxy > 0:
+                hero.move(x, y + 1)
+            oxygen('minus')
             if level_map[y + 1][x] == "0":
-                '''Убирание кислорода!!!!'''
                 Tile('empty1', x, y + 1)
-            hero.move(x, y + 1)
+                oxygen('full')
     elif movement == "left":
         if x > 0 and level_map[y][x - 1] == "." or level_map[y][x - 1] == "@" or level_map[y][x - 1] == "0":
+            if oxy > 0:
+                hero.move(x - 1, y)
+            oxygen('minus')
             if level_map[y][x - 1] == "0":
-                '''Убирание кислорода!!!!'''
                 Tile('empty1', x - 1, y)
-            hero.move(x - 1, y)
+                oxygen('full')
     elif movement == "right":
         if x < max_x and level_map[y][x + 1] == "." or level_map[y][x + 1] == "@" or level_map[y][x + 1] == "0":
+            if oxy > 0:
+                hero.move(x + 1, y)
+            oxygen('minus')
             if level_map[y][x + 1] == "0":
-                '''Убирание кислорода!!!!'''
                 Tile('empty1', x + 1, y)
-            hero.move(x + 1, y)
+                oxygen('full')
 
 
 start_screen()
