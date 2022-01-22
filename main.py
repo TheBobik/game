@@ -139,8 +139,6 @@ def generate_level(level):
                 Tile('cave', x, y)
             elif level[y][x] == '1':
                 Tile('black', x, y)
-            elif level[y][x] == '?':
-                Tile('oxygent', x, y)
             elif level[y][x] == '@':
                 Tile('empty1', x, y)
                 new_player = Player(x, y)
