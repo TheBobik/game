@@ -28,6 +28,8 @@ tile_images = {
     'cave': load_image('cave.png'),
     'oxygen': load_image('O2.png'),
     'empty1': load_image('moon.png'),
+    'black': load_image('black.png'),
+    'oxygent': load_image('oxygent.png'),
     'empty2': load_image('moon.png')
 }
 player_image = load_image('astronaut.png')
@@ -126,6 +128,10 @@ def generate_level(level):
                 Tile('oxygen', x, y)
             elif level[y][x] == '#':
                 Tile('cave', x, y)
+            elif level[y][x] == '1':
+                Tile('black', x, y)
+            elif level[y][x] == '?':
+                Tile('oxygent', x, y)
             elif level[y][x] == '@':
                 Tile('empty1', x, y)
                 new_player = Player(x, y)
