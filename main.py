@@ -85,7 +85,7 @@ class Camera:
         self.dy = 0
 
 
-oxy = 100
+oxy = 1000
 player = None
 running = True
 clock = pygame.time.Clock()
@@ -159,7 +159,8 @@ def move(hero, movement):
     if oxy > 0:
         x, y = hero.pos
         if movement == "up":
-            if y > 0 and level_map[y - 1][x] == "." or level_map[y - 1][x] == "@" or level_map[y - 1][x] == "0":
+            if y > 0 and level_map[y - 1][x] == "." or level_map[y - 1][x] == "@" \
+                    or level_map[y - 1][x] == "," or level_map[y - 1][x] == "0":
                 if level_map[y - 1][x] == ".":
                     oxygen('minus')
                 elif level_map[y - 1][x] == "0":
@@ -167,7 +168,8 @@ def move(hero, movement):
                     Tile('empty1', x, y - 1)
                 hero.move(x, y - 1)
         elif movement == "down":
-            if y < max_y and level_map[y + 1][x] == "." or level_map[y + 1][x] == "@" or level_map[y + 1][x] == "0":
+            if y < max_y and level_map[y + 1][x] == "." or level_map[y + 1][x] == "@" \
+                    or level_map[y + 1][x] == "," or level_map[y + 1][x] == "0":
                 if level_map[y + 1][x] == ".":
                     oxygen('minus')
                 elif level_map[y + 1][x] == "0":
@@ -175,7 +177,8 @@ def move(hero, movement):
                     Tile('empty1', x, y + 1)
                 hero.move(x, y + 1)
         elif movement == "left":
-            if x > 0 and level_map[y][x - 1] == "." or level_map[y][x - 1] == "@" or level_map[y][x - 1] == "0":
+            if x > 0 and level_map[y][x - 1] == "." or level_map[y][x - 1] == "@" \
+                    or level_map[y][x - 1] == "," or level_map[y][x - 1] == "0":
                 if level_map[y][x - 1] == ".":
                     oxygen('minus')
                 elif level_map[y][x - 1] == "0":
@@ -183,16 +186,19 @@ def move(hero, movement):
                     Tile('empty1', x - 1, y)
                 hero.move(x - 1, y)
         elif movement == "right":
-            if x < max_x and level_map[y][x + 1] == "." or level_map[y][x + 1] == "@" or level_map[y][x + 1] == "0":
+            if x < max_x and level_map[y][x + 1] == "." or level_map[y][x + 1] == "@" \
+                    or level_map[y][x + 1] == "," or level_map[y][x + 1] == "0":
                 if level_map[y][x + 1] == ".":
                     oxygen('minus')
                 elif level_map[y][x + 1] == "0":
                     oxygen('full')
                     Tile('empty1', x + 1, y)
                 hero.move(x + 1, y)
+        TitleOx(oxy//10)
 
 
 start_screen()
+TitleOx(oxy//10)
 camera = Camera()
 level_map = load_level('map.txt')
 hero, max_x, max_y = generate_level(level_map)
