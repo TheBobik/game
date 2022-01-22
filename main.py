@@ -30,6 +30,7 @@ tile_images = {
     'empty1': load_image('moon.png'),
     'black': load_image('black.png'),
     'oxygent': load_image('oxygent.png'),
+    'nooxygent': load_image('nooxygent.png'),
     'empty2': load_image('moon.png')
 }
 player_image = load_image('astronaut.png')
@@ -44,6 +45,13 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
         self.abs_pos = (self.rect.x, self.rect.y)
+
+
+def TitleOx(full):
+    for i in range(full):
+        Tile('oxygent', i * 0.5, 0)
+    for y in range(full, 10):
+        Tile('nooxygent', y * 0.5, 0)
 
 
 class Player(pygame.sprite.Sprite):
@@ -135,6 +143,7 @@ def generate_level(level):
             elif level[y][x] == '@':
                 Tile('empty1', x, y)
                 new_player = Player(x, y)
+
     return new_player, x, y
 
 
@@ -183,6 +192,7 @@ def move(hero, movement):
                     oxygen('full')
                     Tile('empty1', x + 1, y)
                 hero.move(x + 1, y)
+        TitleOx(oxy // 10)
 
 
 start_screen()
