@@ -31,7 +31,8 @@ tile_images = {
     'oxygent': load_image('oxygent.png'),
     'empty1': load_image('moon1.png'),
     'empty2': load_image('moon2.png'),
-    'empty3': load_image('invisible.png')
+    'empty3': load_image('invisible.png'),
+    'nooxygent': load_image('nooxygent.png')
 }
 player_image = load_image('astronaut.png')
 
@@ -45,6 +46,13 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
         self.abs_pos = (self.rect.x, self.rect.y)
+
+
+def TitleOx(full):
+    for i in range(full):
+        Tile('oxygent', i * 0.5, 0)
+    for y in range(full, 10):
+        Tile('nooxygent', y * 0.5, 0)
 
 
 class Player(pygame.sprite.Sprite):
@@ -80,7 +88,6 @@ class Camera:
 oxy = 100
 player = None
 running = True
-score_font = pygame.font.SysFont("comicsansms", 35)
 clock = pygame.time.Clock()
 sprite_group = pygame.sprite.Group()
 hero_group = pygame.sprite.Group()
@@ -124,8 +131,6 @@ def generate_level(level):
                 Tile('empty1', x, y)
             elif level[y][x] == ',':
                 Tile('empty2', x, y)
-            elif level[y][x] == '`':
-                Tile('empty3', x, y)
             elif level[y][x] == '!':
                 Tile('rocket', x, y)
             elif level[y][x] == '0':
@@ -149,17 +154,14 @@ def oxygen(status):
             oxy -= 10
         elif status == 'full':
             oxy = 100
-
-    value = score_font.render("Your oxygen: " + str(oxy), True, (255, 0, 0))
-    screen.blit(value, screen_size)
+    print(oxy)
 
 
 def move(hero, movement):
     if oxy > 0:
         x, y = hero.pos
         if movement == "up":
-            if y > 0 and level_map[y - 1][x] == "." or level_map[y - 1][x] == "@" \
-                    or level_map[y - 1][x] == "," or level_map[y - 1][x] == "0":
+            if y > 0 and level_map[y - 1][x] == "." or level_map[y - 1][x] == "@" or level_map[y - 1][x] == "0":
                 if level_map[y - 1][x] == ".":
                     oxygen('minus')
                 elif level_map[y - 1][x] == "0":
@@ -167,8 +169,7 @@ def move(hero, movement):
                     Tile('empty1', x, y - 1)
                 hero.move(x, y - 1)
         elif movement == "down":
-            if y < max_y and level_map[y + 1][x] == "." or level_map[y + 1][x] == "@" \
-                    or level_map[y + 1][x] == "," or level_map[y + 1][x] == "0":
+            if y < max_y and level_map[y + 1][x] == "." or level_map[y + 1][x] == "@" or level_map[y + 1][x] == "0":
                 if level_map[y + 1][x] == ".":
                     oxygen('minus')
                 elif level_map[y + 1][x] == "0":
@@ -176,8 +177,7 @@ def move(hero, movement):
                     Tile('empty1', x, y + 1)
                 hero.move(x, y + 1)
         elif movement == "left":
-            if x > 0 and level_map[y][x - 1] == "." or level_map[y][x - 1] == "@" \
-                    or level_map[y][x - 1] == "," or level_map[y][x - 1] == "0":
+            if x > 0 and level_map[y][x - 1] == "." or level_map[y][x - 1] == "@" or level_map[y][x - 1] == "0":
                 if level_map[y][x - 1] == ".":
                     oxygen('minus')
                 elif level_map[y][x - 1] == "0":
@@ -185,8 +185,7 @@ def move(hero, movement):
                     Tile('empty1', x - 1, y)
                 hero.move(x - 1, y)
         elif movement == "right":
-            if x < max_x and level_map[y][x + 1] == "." or level_map[y][x + 1] == "@" \
-                    or level_map[y][x + 1] == "," or level_map[y][x + 1] == "0":
+            if x < max_x and level_map[y][x + 1] == "." or level_map[y][x + 1] == "@" or level_map[y][x + 1] == "0":
                 if level_map[y][x + 1] == ".":
                     oxygen('minus')
                 elif level_map[y][x + 1] == "0":
