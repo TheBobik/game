@@ -19,9 +19,10 @@ def load_image(name, color_key=None):
 
 
 pygame.init()
-screen_size = (850, 850)
-screen = pygame.display.set_mode(screen_size)
 FPS = 50
+size = 850
+screen_size = (size, size)
+screen = pygame.display.set_mode(screen_size)
 
 tile_images = {
     'rocket': load_image('rocket.png'),
@@ -35,6 +36,7 @@ tile_images = {
     'nooxygent': load_image('nooxygent.png')
 }
 player_image = load_image('astronaut.png')
+bg = load_image('space.jpg')
 
 tile_width = tile_height = 50
 
@@ -49,10 +51,11 @@ class Tile(pygame.sprite.Sprite):
 
 
 def TitleOx(full):
+    image = load_image('nooxygent.png')
     for i in range(full):
-        Tile('oxygent', i * 0.5, 0)
+        screen.blit(image, (i * 0.5, 0))
     for y in range(full, 10):
-        Tile('nooxygent', y * 0.5, 0)
+        screen.blit(image, (y * 0.5, 0))
 
 
 class Player(pygame.sprite.Sprite):
@@ -87,32 +90,10 @@ class Camera:
 
 oxy = 1000
 player = None
-running = True
+ready = False
 clock = pygame.time.Clock()
 sprite_group = pygame.sprite.Group()
 hero_group = pygame.sprite.Group()
-
-
-def terminate():
-    pygame.quit()
-    sys.exit
-
-
-def start_screen():
-    intro_text = [""]
-
-    fon = pygame.transform.scale(load_image('zastavka'), (1000, 800))
-    screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
-    text_coord = 50
-    for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('white'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
 
 
 def load_level(filename):
@@ -145,6 +126,64 @@ def generate_level(level):
     return new_player, x, y
 
 
+def move(hero, movement):
+    global ready
+    if oxy > 0:
+        x, y = hero.pos
+        if movement == "up":
+            if y > 0 and level_map[y - 1][x] == "." or level_map[y - 1][x] == "@" \
+                    or level_map[y - 1][x] == "," or level_map[y - 1][x] == "0" or level_map[y - 1][x] == "#":
+                if level_map[y - 1][x] == "." or level_map[y - 1][x] == ",":
+                    oxygen('minus')
+                elif level_map[y - 1][x] == "0":
+                    oxygen('full')
+                    Tile('empty1', x, y - 1)
+                if level_map[y - 1][x] == "#":
+                    ready = True
+                else:
+                    ready = False
+                hero.move(x, y - 1)
+        elif movement == "down":
+            if y < max_y and level_map[y + 1][x] == "." or level_map[y + 1][x] == "@" \
+                    or level_map[y + 1][x] == "," or level_map[y + 1][x] == "0" or level_map[y + 1][x] == "#":
+                if level_map[y + 1][x] == "." or level_map[y + 1][x] == ",":
+                    oxygen('minus')
+                elif level_map[y + 1][x] == "0":
+                    oxygen('full')
+                    Tile('empty1', x, y + 1)
+                if level_map[y + 1][x] == "#":
+                    ready = True
+                else:
+                    ready = False
+                hero.move(x, y + 1)
+        elif movement == "left":
+            if x > 0 and level_map[y][x - 1] == "." or level_map[y][x - 1] == "@" \
+                    or level_map[y][x - 1] == "," or level_map[y][x - 1] == "0" or level_map[y][x - 1] == "#":
+                if level_map[y][x - 1] == "." or level_map[y][x - 1] == ",":
+                    oxygen('minus')
+                elif level_map[y][x - 1] == "0":
+                    oxygen('full')
+                    Tile('empty1', x - 1, y)
+                if level_map[y][x - 1] == "#":
+                    ready = True
+                else:
+                    ready = False
+                hero.move(x - 1, y)
+        elif movement == "right":
+            if x < max_x and level_map[y][x + 1] == "." or level_map[y][x + 1] == "@" \
+                    or level_map[y][x + 1] == "," or level_map[y][x + 1] == "0" or level_map[y][x + 1] == "#":
+                if level_map[y][x + 1] == "." or level_map[y][x + 1] == ",":
+                    oxygen('minus')
+                elif level_map[y][x + 1] == "0":
+                    oxygen('full')
+                    Tile('empty1', x + 1, y)
+                if level_map[y][x + 1] == "#":
+                    ready = True
+                else:
+                    ready = False
+                hero.move(x + 1, y)
+
+
 def oxygen(status):
     global oxy
     if oxy > 0:
@@ -155,70 +194,69 @@ def oxygen(status):
     print(oxy)
 
 
-def move(hero, movement):
-    if oxy > 0:
-        x, y = hero.pos
-        if movement == "up":
-            if y > 0 and level_map[y - 1][x] == "." or level_map[y - 1][x] == "@" \
-                    or level_map[y - 1][x] == "," or level_map[y - 1][x] == "0":
-                if level_map[y - 1][x] == ".":
-                    oxygen('minus')
-                elif level_map[y - 1][x] == "0":
-                    oxygen('full')
-                    Tile('empty1', x, y - 1)
-                hero.move(x, y - 1)
-        elif movement == "down":
-            if y < max_y and level_map[y + 1][x] == "." or level_map[y + 1][x] == "@" \
-                    or level_map[y + 1][x] == "," or level_map[y + 1][x] == "0":
-                if level_map[y + 1][x] == ".":
-                    oxygen('minus')
-                elif level_map[y + 1][x] == "0":
-                    oxygen('full')
-                    Tile('empty1', x, y + 1)
-                hero.move(x, y + 1)
-        elif movement == "left":
-            if x > 0 and level_map[y][x - 1] == "." or level_map[y][x - 1] == "@" \
-                    or level_map[y][x - 1] == "," or level_map[y][x - 1] == "0":
-                if level_map[y][x - 1] == ".":
-                    oxygen('minus')
-                elif level_map[y][x - 1] == "0":
-                    oxygen('full')
-                    Tile('empty1', x - 1, y)
-                hero.move(x - 1, y)
-        elif movement == "right":
-            if x < max_x and level_map[y][x + 1] == "." or level_map[y][x + 1] == "@" \
-                    or level_map[y][x + 1] == "," or level_map[y][x + 1] == "0":
-                if level_map[y][x + 1] == ".":
-                    oxygen('minus')
-                elif level_map[y][x + 1] == "0":
-                    oxygen('full')
-                    Tile('empty1', x + 1, y)
-                hero.move(x + 1, y)
-        TitleOx(oxy//10)
+def message(msg, k):
+    x, y = screen_size
+    text_style = pygame.font.SysFont("bahnschrift", 25)
+    mesg = text_style.render(msg, True, (155, 0, 0))
+    screen.blit(mesg, (x // 2.5 - 5 ** k, y // 3 + 35 * k))
 
 
-start_screen()
-TitleOx(oxy//10)
+def show_menu():
+    pass
+
+
+def terminate():
+    pygame.quit()
+    quit()
+
+
 camera = Camera()
 level_map = load_level('map.txt')
 hero, max_x, max_y = generate_level(level_map)
 camera.update(hero)
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                move(hero, "up")
-            elif event.key == pygame.K_DOWN:
-                move(hero, "down")
-            elif event.key == pygame.K_LEFT:
-                move(hero, "left")
-            elif event.key == pygame.K_RIGHT:
-                move(hero, "right")
-    screen.fill(pygame.Color("black"))
-    sprite_group.draw(screen)
-    hero_group.draw(screen)
-    clock.tick(FPS)
-    pygame.display.flip()
-pygame.quit()
+
+
+def gameloop():
+    global oxy
+
+    while oxy == 0:
+        message('Вы проиграли!', 2)
+        message('Нажмите "Q" чтобы выйти из игры', 3)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    terminate()
+    while oxy != 0:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    move(hero, "up")
+                elif event.key == pygame.K_DOWN:
+                    move(hero, "down")
+                elif event.key == pygame.K_LEFT:
+                    move(hero, "left")
+                elif event.key == pygame.K_RIGHT:
+                    move(hero, "right")
+                if ready:
+                    if event.key == pygame.K_y:
+                        os.system('python minigame.py')
+                        print('press')
+        screen.fill(pygame.Color("black"))
+        screen.blit(bg, (0, 0))
+        sprite_group.draw(screen)
+        hero_group.draw(screen)
+        clock.tick(FPS)
+        if ready:
+            message('Нажмите "Y" для начала мини игры', 1)
+            pygame.display.flip()
+        pygame.display.flip()
+        if oxy == 0:
+            gameloop()
+    terminate()
+
+
+gameloop()
